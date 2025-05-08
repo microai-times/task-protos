@@ -1,4 +1,4 @@
-module github.com/thebigbrain/microai-protos
+module github.com/thebigbrain/microai-protos/go
 
 go 1.24.0
 

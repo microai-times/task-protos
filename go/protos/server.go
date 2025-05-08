@@ -3,7 +3,7 @@ package protos
 import (
 	"net"
 
-	pb "github.com/thebigbrain/microai-protos/gen"
+	pb "github.com/thebigbrain/microai-protos/go/gen"
 	"google.golang.org/grpc"
 )
 

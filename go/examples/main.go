@@ -6,7 +6,7 @@ import (
 	"log"
 	"net"
 
-	"github.com/thebigbrain/microai-protos/protos"
+	"github.com/thebigbrain/microai-protos/go/protos"
 )
 
 var (
