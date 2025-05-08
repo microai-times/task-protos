@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	pb "microai.com/protos/gen/protos"
+	pb "github.com/thebigbrain/microai-protos/gen"
 )
 
 // 核心数据结构

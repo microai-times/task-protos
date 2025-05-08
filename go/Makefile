@@ -2,7 +2,7 @@
 
 # Variables
 PROTO_DIR := ../protos
-OUT_DIR := gen/protos
+OUT_DIR := gen
 PROTO_FILES := $(wildcard $(PROTO_DIR)/*.proto)
 PROTO_TARGETS := $(patsubst $(PROTO_DIR)/%.proto,$(OUT_DIR)/%.pb.go,$(PROTO_FILES))
 
