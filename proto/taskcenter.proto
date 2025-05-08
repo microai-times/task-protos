@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+package taskcenter;
+
+option go_package = "microai.com/proto";
+
+// 节点注册服务
+service Registration {
+  rpc Register (NodeInfo) returns (RegistrationResponse) {}
+  rpc Heartbeat (NodePulse) returns (stream Task) {}  // 长连接任务推送
+}
+
+// 任务执行服务
+service TaskExecution {
+  rpc ReportResult (TaskResult) returns (Ack) {}
+}
+
+// ========== 数据结构 ==========
+
+// 网络信息
+message NetworkInfo {
+  enum NetworkType {
+    UNKNOWN = 0;
+    WIFI = 1;
+    MOBILE = 2;
+    ETHERNET = 3;
+  }
+  NetworkType type = 1;
+  int32 speed_mbps = 2;  // 网络速度(Mbps)
+  bool is_metered = 3;   // 是否计费网络
+}
+
+// 节点心跳信息
+message NodePulse {
+  string node_id = 1;
+  float cpu_usage = 2;    // CPU使用率(0-1)
+  float memory_usage = 3; // 内存使用率(0-1)
+  NetworkInfo network = 4;
+  float battery_level = 5; // 电量(0-1)
+}
+
+// 注册响应
+message RegistrationResponse {
+  bool success = 1;
+  string assigned_id = 2;  // 服务端分配的唯一ID
+  int32 heartbeat_interval = 3;  // 心跳间隔(秒)
+}
+
+// 压缩类型枚举
+enum CompressionType {
+  NONE = 0;
+  ZLIB = 1;
+  LZ4 = 2;
+}
+
+// 通用确认响应
+message Ack {
+  bool success = 1;
+  string message = 2;
+}
+
+// ========== 之前已有的定义 ==========
+
+message NodeInfo {
+  string node_id = 1;  // Android设备ID
+  DeviceCapabilities capabilities = 2;
+  string android_version = 3;
+  NetworkInfo network = 4;
+}
+
+message DeviceCapabilities {
+  int32 cpu_cores = 1;
+  float memory_mb = 2;
+  bool has_gpu = 3;
+  repeated string supported_ops = 4;  // ["tflite", "onnx"]
+}
+
+message Task {
+  string task_id = 1;
+  bytes payload = 2;  // 可包含Protobuf序列化的模型参数
+  int32 timeout_sec = 3;
+  CompressionType compression = 4;
+  uint32 original_size = 5;
+}
+
+message TaskResult {
+  string task_id = 1;
+  bool success = 2;
+  bytes output = 3;
+  float execution_time = 4;
+}
