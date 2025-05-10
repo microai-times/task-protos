@@ -8,10 +8,11 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
+	"github.com/google/uuid"
 	pb "github.com/microai-times/task-protos/go/protos"
 )
 
-var nodeId = "node-1"
+var nodeId = uuid.New().String()
 
 func handleRpc(c pb.RegistrationClient) {
 	for {
