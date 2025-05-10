@@ -6,7 +6,9 @@ import (
 	"log"
 	"net"
 
-	"github.com/thebigbrain/microai-protos/go/protos"
+	"github.com/microai-times/task-protos/go/examples/center/task"
+	pb "github.com/microai-times/task-protos/go/protos"
+	"google.golang.org/grpc"
 )
 
 var (
@@ -22,8 +24,10 @@ func main() {
 	}
 
 	log.Printf("server listening at %v", lis.Addr())
-	if err := protos.StartServer(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
+	s := grpc.NewServer()
+	pb.RegisterRegistrationServer(s, &task.TaskCenter{})
 
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("failed to serve: %v", err)
 	}
 }

@@ -1,4 +1,4 @@
-package protos
+package task
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	pb "github.com/thebigbrain/microai-protos/go/gen"
+	pb "github.com/microai-times/task-protos/go/protos"
 )
 
 // 核心数据结构
@@ -39,6 +39,7 @@ func (s *TaskCenter) Register(ctx context.Context, req *pb.NodeInfo) (*pb.Regist
 	s.nodes.Store(req.NodeId, node)
 	return &pb.RegistrationResponse{
 		Success:           true,
+		AssignedId:        req.NodeId,
 		HeartbeatInterval: 30, // 建议心跳间隔(秒)
 	}, nil
 }

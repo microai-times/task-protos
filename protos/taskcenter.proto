@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package taskcenter;
 
-option go_package = "microai.com/protos";
+option go_package = "microai.times/protos";
 
 // 节点注册服务
 service Registration {
