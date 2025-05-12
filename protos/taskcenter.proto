@@ -3,6 +3,9 @@ syntax = "proto3";
 package taskcenter;
 
 option go_package = "microai.times/protos";
+option java_multiple_files = true;
+option java_package = "times.microai.protos";
+option java_outer_classname = "TaskProto";
 
 // 节点注册服务
 service Registration {
