@@ -1,0 +1,14 @@
+{
+    "protoc": {
+        "compile_on_save": false,
+        "compile_all_path": "${workspaceRoot}/protos",
+        "options": [
+            "--proto_path=${workspaceRoot}/protos",
+        ]
+    },
+
+    "recommendations": [
+        "zxh404.protobuf"
+        // 你可以根据需要添加其他推荐的插件，例如 Python 或 gRPC 相关的插件
+    ]
+}
