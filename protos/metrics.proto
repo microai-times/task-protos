@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package taskcenter;
+
+option go_package = "microai.times/protos";
+option java_multiple_files = true;
+option java_package = "times.microai.protos";
+option java_outer_classname = "MetricsProto";
+
+
+message TransferMetrics {
+    string transmission_id = 1;
+    double serialize_time = 2;  // 序列化耗时(ms)
+    double network_time = 3;    // 网络传输耗时
+    int32 retry_count = 4;      // 重试次数
+    int32 bytes_sent = 5;       // 实际发送字节数
+    float compression_ratio = 6; // 压缩率
+}
