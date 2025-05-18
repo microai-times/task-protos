@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package taskcenter;
+
+option go_package = "microai.times/protos";
+option java_multiple_files = true;
+option java_package = "times.microai.protos";
+option java_outer_classname = "CommunicationProto";
+
+// 模型规格
+message ModelSpec {
+  string model_id = 1;
+  string model_url = 2;
+  map<string, string> params = 3; // 模型参数
+}
+
+// 层数据请求
+message LayerRequest {
+  string layer_name = 1;       // 层名称
+  string request_id = 2;       // 请求标识(用于追踪)
+  bool compressed = 3;         // 是否启用压缩
+}

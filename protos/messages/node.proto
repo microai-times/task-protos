@@ -42,3 +42,16 @@ message DeviceCapabilities {
   bool has_gpu = 3;
   repeated string supported_ops = 4;  // ["tflite", "onnx"]
 }
+
+// 节点状态报告
+message NodeStatus {
+  string node_id = 1;          // 节点唯一标识
+  repeated string models = 2;  // 已加载的模型列表
+  float load_factor = 3;       // 当前负载系数 [0-1]
+  string ip_address = 4;       // 节点可访问地址
+}
+
+message StatusAck {
+  bool require_heartbeat = 1;  // 是否需要定期上报心跳
+  int32 heartbeat_interval = 2; // 心跳间隔(秒)
+}

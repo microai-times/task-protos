@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package taskcenter;
+
+option go_package = "microai.times/protos";
+option java_multiple_files = true;
+option java_package = "times.microai.protos";
+option java_outer_classname = "ComputeServiceProto";
+
+import "messages/result.proto";
+import "messages/task.proto";
+import "messages/communication.proto";
+import "messages/ttf.proto";
+
+// 节点计算服务
+service ComputeNode {
+  // 模型预加载接口
+  rpc PreloadModel (ModelSpec) returns (LoadResult);
+  
+  // 层数据获取接口（用于节点间数据传输）
+  rpc GetLayerOutput (LayerRequest) returns (TensorData);
+  
+  // 计算任务执行接口
+  rpc ExecuteTask (ComputeTask) returns (TaskResult);
+}

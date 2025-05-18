@@ -7,8 +7,8 @@ option java_multiple_files = true;
 option java_package = "times.microai.protos";
 option java_outer_classname = "RegistrationProto";
 
-import  "node.proto";
-import  "task.proto";
+import  "messages/node.proto";
+import  "messages/task.proto";
 
 
 // 节点注册服务

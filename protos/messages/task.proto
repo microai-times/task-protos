@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package taskcenter;
+
+option go_package = "microai.times/protos";
+option java_multiple_files = true;
+option java_package = "times.microai.protos";
+option java_outer_classname = "TaskProto";
+
+import "core/compression.proto";
+
+
+message Task {
+  string task_id = 1;
+  bytes payload = 2;  // 可包含Protobuf序列化的模型参数
+  int32 timeout_sec = 3;
+  CompressionType compression = 4;
+  uint32 original_size = 5;
+}
+
+// 任务分配结果
+message TaskAssignment {
+  string task_id = 1;
+  string assigned_node = 2;    // 分配的节点ID
+  int64 expiry_time = 3;       // 任务过期时间戳
+}
+
+// 任务请求
+message TaskRequest {
+  string task_id = 1;          // 任务唯一标识
+  string model_id = 2;         // 需要的模型标识
+  oneof task_type {
+    PreloadTask preload = 3;   // 预加载任务
+    ComputeTask compute = 4;   // 计算任务
+  }
+}
+
+// 预加载任务参数
+message PreloadTask {
+  string model_url = 1;        // 模型下载地址
+  int32 priority = 2;          // 优先级(0-10)
+}
+
+// 计算任务参数
+message ComputeTask {
+  string input_data_ref = 1;   // 输入数据引用(URL/ID)
+  repeated string output_layers = 2; // 需要输出的层名称
+  string source_node = 3;      // 数据来源节点ID(可选)
+}
