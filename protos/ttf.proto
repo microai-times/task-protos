@@ -1,0 +1,101 @@
+syntax = "proto3";
+
+package taskcenter;
+
+option go_package = "microai.times/protos";
+option java_multiple_files = true;
+option java_package = "times.microai.protos";
+option java_outer_classname = "TensorTransmissionFormatProto";
+
+
+// 张量批次传输协议
+message TensorBatch {
+    string transmission_id = 1;       // 唯一传输ID
+    string model_name = 2;           // 模型标识
+    int32 source_layer = 3;          // 源层索引
+    int32 target_layer = 4;          // 目标层索引
+    repeated TensorData tensors = 5;  // 张量数据数组
+    int32 priority = 6;              // 传输优先级
+    bool requires_grad = 7;          // 是否需要梯度
+}
+
+// 单个张量数据
+message TensorData {
+    string name = 1;                 // 张量名称
+    repeated int64 shape = 2;        // 形状数组
+    DataType dtype = 3;              // 数据类型
+    bytes data = 4;                  // 原始字节数据
+    Compression compression = 5;     // 压缩信息
+    
+    enum DataType {
+        DT_FLOAT = 0;
+        DT_HALF = 1;
+        DT_INT32 = 2;
+        DT_INT64 = 3;
+        DT_BOOL = 4;
+    }
+    
+    message Compression {
+        CompressionType type = 1;
+        float ratio = 2;             // 压缩率
+        int32 original_size = 3;     // 原始字节数
+        
+        enum CompressionType {
+            NONE = 0;
+            FP16 = 1;     // float32->float16
+            QUANT8 = 2;   // 8-bit量化
+            ZSTD = 3;     // Zstandard压缩
+        }
+    }
+}
+
+// 传输确认响应
+message TransferAck {
+    string transmission_id = 1;      // 对应的传输ID
+    Status status = 2;               // 处理状态
+    int64 receive_timestamp = 3;     // 接收时间戳(ns)
+    string target_device = 4;        // 目标设备标识
+    repeated TensorMeta received = 5; // 成功接收的张量元数据
+    
+    enum Status {
+        SUCCESS = 0;
+        PARTIAL = 1;    // 部分成功
+        FAILED = 2;
+        RETRY = 3;      // 建议重试
+    }
+    
+    message TensorMeta {
+        string name = 1;
+        int32 bytes_received = 2;
+        bool checksum_valid = 3;
+    }
+}
+
+// gRPC服务定义
+service ModelTransferService {
+    // 单向批量传输
+    rpc SendBatch (TensorBatch) returns (TransferAck);
+    
+    // 流式传输 (适合大张量)
+    rpc StreamSend (stream TensorChunk) returns (TransferAck);
+    
+    // 双向流式 (带背压控制)
+    rpc BidirectionalStream (stream TensorChunk) returns (stream TransferAck);
+}
+
+// 分块传输协议
+message TensorChunk {
+    string transmission_id = 1;
+    int32 chunk_index = 2;
+    bool is_last = 3;
+    oneof payload {
+        bytes raw_data = 4;          // 原始数据块
+        TensorMeta meta = 5;         // 首块包含元数据
+    }
+    
+    message TensorMeta {
+        TensorBatch batch_header = 1;
+        int32 total_chunks = 2;
+        int32 chunk_size = 3;
+    }
+}
