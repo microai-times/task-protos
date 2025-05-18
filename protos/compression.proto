@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package taskcenter;
+
+option go_package = "microai.times/protos";
+option java_multiple_files = true;
+option java_package = "times.microai.protos";
+option java_outer_classname = "TaskProto";
+
+
+// 压缩类型枚举
+enum CompressionType {
+  NONE = 0;
+  ZLIB = 1;
+  LZ4 = 2;
+}

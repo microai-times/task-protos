@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package taskcenter;
+
+option go_package = "microai.times/protos";
+option java_multiple_files = true;
+option java_package = "times.microai.protos";
+option java_outer_classname = "ExecutionProto";
+
+import "task.proto";
+
+
+// 任务执行服务
+service TaskExecution {
+  rpc ReportResult (TaskResult) returns (Ack) {}
+}

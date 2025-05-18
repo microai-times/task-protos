@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package taskcenter;
+
+option go_package = "microai.times/protos";
+option java_multiple_files = true;
+option java_package = "times.microai.protos";
+option java_outer_classname = "RegistrationProto";
+
+import  "node.proto";
+import  "task.proto";
+
+
+// 节点注册服务
+service Registration {
+  rpc Register (NodeInfo) returns (RegistrationResponse) {}
+  rpc Heartbeat (NodePulse) returns (stream Task) {}  // 长连接任务推送
+}
+
+
+// 注册响应
+message RegistrationResponse {
+  bool success = 1;
+  string assigned_id = 2;  // 服务端分配的唯一ID
+  int32 heartbeat_interval = 3;  // 心跳间隔(秒)
+}
