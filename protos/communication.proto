@@ -7,6 +7,8 @@ option java_multiple_files = true;
 option java_package = "times.microai.protos";
 option java_outer_classname = "CommunicationProto";
 
+import "ttf.proto";
+
 // 模型规格
 message ModelSpec {
   string model_id = 1;
