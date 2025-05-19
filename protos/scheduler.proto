@@ -7,8 +7,8 @@ option java_multiple_files = true;
 option java_package = "times.microai.protos";
 option java_outer_classname = "SchedulerServiceProto";
 
-import "messages/node.proto";
-import "messages/task.proto";
+import "node.proto";
+import "task.proto";
 
 // 任务中心服务
 service TaskScheduler {

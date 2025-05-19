@@ -7,7 +7,7 @@ option java_multiple_files = true;
 option java_package = "times.microai.protos";
 option java_outer_classname = "TaskProto";
 
-import "core/compression.proto";
+import "compression.proto";
 
 
 message Task {

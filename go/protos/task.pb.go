@@ -99,18 +99,19 @@ func (x *Task) GetOriginalSize() uint32 {
 	return 0
 }
 
-// 通用确认响应
-type Ack struct {
+// 任务分配结果
+type TaskAssignment struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Success bool   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
-	Message string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	TaskId       string `protobuf:"bytes,1,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
+	AssignedNode string `protobuf:"bytes,2,opt,name=assigned_node,json=assignedNode,proto3" json:"assigned_node,omitempty"` // 分配的节点ID
+	ExpiryTime   int64  `protobuf:"varint,3,opt,name=expiry_time,json=expiryTime,proto3" json:"expiry_time,omitempty"`      // 任务过期时间戳
 }
 
-func (x *Ack) Reset() {
-	*x = Ack{}
+func (x *TaskAssignment) Reset() {
+	*x = TaskAssignment{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_task_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -118,13 +119,13 @@ func (x *Ack) Reset() {
 	}
 }
 
-func (x *Ack) String() string {
+func (x *TaskAssignment) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*Ack) ProtoMessage() {}
+func (*TaskAssignment) ProtoMessage() {}
 
-func (x *Ack) ProtoReflect() protoreflect.Message {
+func (x *TaskAssignment) ProtoReflect() protoreflect.Message {
 	mi := &file_task_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -136,38 +137,48 @@ func (x *Ack) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Ack.ProtoReflect.Descriptor instead.
-func (*Ack) Descriptor() ([]byte, []int) {
+// Deprecated: Use TaskAssignment.ProtoReflect.Descriptor instead.
+func (*TaskAssignment) Descriptor() ([]byte, []int) {
 	return file_task_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *Ack) GetSuccess() bool {
+func (x *TaskAssignment) GetTaskId() string {
 	if x != nil {
-		return x.Success
-	}
-	return false
-}
-
-func (x *Ack) GetMessage() string {
-	if x != nil {
-		return x.Message
+		return x.TaskId
 	}
 	return ""
 }
 
-type TaskResult struct {
+func (x *TaskAssignment) GetAssignedNode() string {
+	if x != nil {
+		return x.AssignedNode
+	}
+	return ""
+}
+
+func (x *TaskAssignment) GetExpiryTime() int64 {
+	if x != nil {
+		return x.ExpiryTime
+	}
+	return 0
+}
+
+// 任务请求
+type TaskRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	TaskId        string  `protobuf:"bytes,1,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`
-	Success       bool    `protobuf:"varint,2,opt,name=success,proto3" json:"success,omitempty"`
-	Output        []byte  `protobuf:"bytes,3,opt,name=output,proto3" json:"output,omitempty"`
-	ExecutionTime float32 `protobuf:"fixed32,4,opt,name=execution_time,json=executionTime,proto3" json:"execution_time,omitempty"`
+	TaskId  string `protobuf:"bytes,1,opt,name=task_id,json=taskId,proto3" json:"task_id,omitempty"`    // 任务唯一标识
+	ModelId string `protobuf:"bytes,2,opt,name=model_id,json=modelId,proto3" json:"model_id,omitempty"` // 需要的模型标识
+	// Types that are assignable to TaskType:
+	//	*TaskRequest_Preload
+	//	*TaskRequest_Compute
+	TaskType isTaskRequest_TaskType `protobuf_oneof:"task_type"`
 }
 
-func (x *TaskResult) Reset() {
-	*x = TaskResult{}
+func (x *TaskRequest) Reset() {
+	*x = TaskRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_task_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -175,13 +186,13 @@ func (x *TaskResult) Reset() {
 	}
 }
 
-func (x *TaskResult) String() string {
+func (x *TaskRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*TaskResult) ProtoMessage() {}
+func (*TaskRequest) ProtoMessage() {}
 
-func (x *TaskResult) ProtoReflect() protoreflect.Message {
+func (x *TaskRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_task_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -193,37 +204,180 @@ func (x *TaskResult) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TaskResult.ProtoReflect.Descriptor instead.
-func (*TaskResult) Descriptor() ([]byte, []int) {
+// Deprecated: Use TaskRequest.ProtoReflect.Descriptor instead.
+func (*TaskRequest) Descriptor() ([]byte, []int) {
 	return file_task_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *TaskResult) GetTaskId() string {
+func (x *TaskRequest) GetTaskId() string {
 	if x != nil {
 		return x.TaskId
 	}
 	return ""
 }
 
-func (x *TaskResult) GetSuccess() bool {
+func (x *TaskRequest) GetModelId() string {
 	if x != nil {
-		return x.Success
+		return x.ModelId
 	}
-	return false
+	return ""
 }
 
-func (x *TaskResult) GetOutput() []byte {
-	if x != nil {
-		return x.Output
+func (m *TaskRequest) GetTaskType() isTaskRequest_TaskType {
+	if m != nil {
+		return m.TaskType
 	}
 	return nil
 }
 
-func (x *TaskResult) GetExecutionTime() float32 {
+func (x *TaskRequest) GetPreload() *PreloadTask {
+	if x, ok := x.GetTaskType().(*TaskRequest_Preload); ok {
+		return x.Preload
+	}
+	return nil
+}
+
+func (x *TaskRequest) GetCompute() *ComputeTask {
+	if x, ok := x.GetTaskType().(*TaskRequest_Compute); ok {
+		return x.Compute
+	}
+	return nil
+}
+
+type isTaskRequest_TaskType interface {
+	isTaskRequest_TaskType()
+}
+
+type TaskRequest_Preload struct {
+	Preload *PreloadTask `protobuf:"bytes,3,opt,name=preload,proto3,oneof"` // 预加载任务
+}
+
+type TaskRequest_Compute struct {
+	Compute *ComputeTask `protobuf:"bytes,4,opt,name=compute,proto3,oneof"` // 计算任务
+}
+
+func (*TaskRequest_Preload) isTaskRequest_TaskType() {}
+
+func (*TaskRequest_Compute) isTaskRequest_TaskType() {}
+
+// 预加载任务参数
+type PreloadTask struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ModelUrl string `protobuf:"bytes,1,opt,name=model_url,json=modelUrl,proto3" json:"model_url,omitempty"` // 模型下载地址
+	Priority int32  `protobuf:"varint,2,opt,name=priority,proto3" json:"priority,omitempty"`                // 优先级(0-10)
+}
+
+func (x *PreloadTask) Reset() {
+	*x = PreloadTask{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_task_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *PreloadTask) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PreloadTask) ProtoMessage() {}
+
+func (x *PreloadTask) ProtoReflect() protoreflect.Message {
+	mi := &file_task_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PreloadTask.ProtoReflect.Descriptor instead.
+func (*PreloadTask) Descriptor() ([]byte, []int) {
+	return file_task_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *PreloadTask) GetModelUrl() string {
 	if x != nil {
-		return x.ExecutionTime
+		return x.ModelUrl
+	}
+	return ""
+}
+
+func (x *PreloadTask) GetPriority() int32 {
+	if x != nil {
+		return x.Priority
 	}
 	return 0
+}
+
+// 计算任务参数
+type ComputeTask struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	InputDataRef string   `protobuf:"bytes,1,opt,name=input_data_ref,json=inputDataRef,proto3" json:"input_data_ref,omitempty"` // 输入数据引用(URL/ID)
+	OutputLayers []string `protobuf:"bytes,2,rep,name=output_layers,json=outputLayers,proto3" json:"output_layers,omitempty"`   // 需要输出的层名称
+	SourceNode   string   `protobuf:"bytes,3,opt,name=source_node,json=sourceNode,proto3" json:"source_node,omitempty"`         // 数据来源节点ID(可选)
+}
+
+func (x *ComputeTask) Reset() {
+	*x = ComputeTask{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_task_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ComputeTask) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ComputeTask) ProtoMessage() {}
+
+func (x *ComputeTask) ProtoReflect() protoreflect.Message {
+	mi := &file_task_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ComputeTask.ProtoReflect.Descriptor instead.
+func (*ComputeTask) Descriptor() ([]byte, []int) {
+	return file_task_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ComputeTask) GetInputDataRef() string {
+	if x != nil {
+		return x.InputDataRef
+	}
+	return ""
+}
+
+func (x *ComputeTask) GetOutputLayers() []string {
+	if x != nil {
+		return x.OutputLayers
+	}
+	return nil
+}
+
+func (x *ComputeTask) GetSourceNode() string {
+	if x != nil {
+		return x.SourceNode
+	}
+	return ""
 }
 
 var File_task_proto protoreflect.FileDescriptor
@@ -243,23 +397,42 @@ var file_task_proto_rawDesc = []byte{
 	0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x52, 0x0b, 0x63, 0x6f, 0x6d, 0x70,
 	0x72, 0x65, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x23, 0x0a, 0x0d, 0x6f, 0x72, 0x69, 0x67, 0x69,
 	0x6e, 0x61, 0x6c, 0x5f, 0x73, 0x69, 0x7a, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0d, 0x52, 0x0c,
-	0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x61, 0x6c, 0x53, 0x69, 0x7a, 0x65, 0x22, 0x39, 0x0a, 0x03,
-	0x41, 0x63, 0x6b, 0x12, 0x18, 0x0a, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x12, 0x18, 0x0a,
-	0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
-	0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22, 0x7e, 0x0a, 0x0a, 0x54, 0x61, 0x73, 0x6b, 0x52,
-	0x65, 0x73, 0x75, 0x6c, 0x74, 0x12, 0x17, 0x0a, 0x07, 0x74, 0x61, 0x73, 0x6b, 0x5f, 0x69, 0x64,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x74, 0x61, 0x73, 0x6b, 0x49, 0x64, 0x12, 0x18,
-	0x0a, 0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52,
-	0x07, 0x73, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x6f, 0x75, 0x74, 0x70,
-	0x75, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x06, 0x6f, 0x75, 0x74, 0x70, 0x75, 0x74,
-	0x12, 0x25, 0x0a, 0x0e, 0x65, 0x78, 0x65, 0x63, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x74, 0x69,
-	0x6d, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x02, 0x52, 0x0d, 0x65, 0x78, 0x65, 0x63, 0x75, 0x74,
-	0x69, 0x6f, 0x6e, 0x54, 0x69, 0x6d, 0x65, 0x42, 0x39, 0x0a, 0x14, 0x74, 0x69, 0x6d, 0x65, 0x73,
-	0x2e, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x61, 0x69, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x42,
-	0x09, 0x54, 0x61, 0x73, 0x6b, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x14, 0x6d, 0x69,
-	0x63, 0x72, 0x6f, 0x61, 0x69, 0x2e, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x2f, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6f, 0x72, 0x69, 0x67, 0x69, 0x6e, 0x61, 0x6c, 0x53, 0x69, 0x7a, 0x65, 0x22, 0x6f, 0x0a, 0x0e,
+	0x54, 0x61, 0x73, 0x6b, 0x41, 0x73, 0x73, 0x69, 0x67, 0x6e, 0x6d, 0x65, 0x6e, 0x74, 0x12, 0x17,
+	0x0a, 0x07, 0x74, 0x61, 0x73, 0x6b, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x06, 0x74, 0x61, 0x73, 0x6b, 0x49, 0x64, 0x12, 0x23, 0x0a, 0x0d, 0x61, 0x73, 0x73, 0x69, 0x67,
+	0x6e, 0x65, 0x64, 0x5f, 0x6e, 0x6f, 0x64, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c,
+	0x61, 0x73, 0x73, 0x69, 0x67, 0x6e, 0x65, 0x64, 0x4e, 0x6f, 0x64, 0x65, 0x12, 0x1f, 0x0a, 0x0b,
+	0x65, 0x78, 0x70, 0x69, 0x72, 0x79, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x03, 0x52, 0x0a, 0x65, 0x78, 0x70, 0x69, 0x72, 0x79, 0x54, 0x69, 0x6d, 0x65, 0x22, 0xb8, 0x01,
+	0x0a, 0x0b, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x17, 0x0a,
+	0x07, 0x74, 0x61, 0x73, 0x6b, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06,
+	0x74, 0x61, 0x73, 0x6b, 0x49, 0x64, 0x12, 0x19, 0x0a, 0x08, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x5f,
+	0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x49,
+	0x64, 0x12, 0x33, 0x0a, 0x07, 0x70, 0x72, 0x65, 0x6c, 0x6f, 0x61, 0x64, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x17, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x63, 0x65, 0x6e, 0x74, 0x65, 0x72, 0x2e,
+	0x50, 0x72, 0x65, 0x6c, 0x6f, 0x61, 0x64, 0x54, 0x61, 0x73, 0x6b, 0x48, 0x00, 0x52, 0x07, 0x70,
+	0x72, 0x65, 0x6c, 0x6f, 0x61, 0x64, 0x12, 0x33, 0x0a, 0x07, 0x63, 0x6f, 0x6d, 0x70, 0x75, 0x74,
+	0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x74, 0x61, 0x73, 0x6b, 0x63, 0x65,
+	0x6e, 0x74, 0x65, 0x72, 0x2e, 0x43, 0x6f, 0x6d, 0x70, 0x75, 0x74, 0x65, 0x54, 0x61, 0x73, 0x6b,
+	0x48, 0x00, 0x52, 0x07, 0x63, 0x6f, 0x6d, 0x70, 0x75, 0x74, 0x65, 0x42, 0x0b, 0x0a, 0x09, 0x74,
+	0x61, 0x73, 0x6b, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x22, 0x46, 0x0a, 0x0b, 0x50, 0x72, 0x65, 0x6c,
+	0x6f, 0x61, 0x64, 0x54, 0x61, 0x73, 0x6b, 0x12, 0x1b, 0x0a, 0x09, 0x6d, 0x6f, 0x64, 0x65, 0x6c,
+	0x5f, 0x75, 0x72, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6d, 0x6f, 0x64, 0x65,
+	0x6c, 0x55, 0x72, 0x6c, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x72, 0x69, 0x6f, 0x72, 0x69, 0x74, 0x79,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x08, 0x70, 0x72, 0x69, 0x6f, 0x72, 0x69, 0x74, 0x79,
+	0x22, 0x79, 0x0a, 0x0b, 0x43, 0x6f, 0x6d, 0x70, 0x75, 0x74, 0x65, 0x54, 0x61, 0x73, 0x6b, 0x12,
+	0x24, 0x0a, 0x0e, 0x69, 0x6e, 0x70, 0x75, 0x74, 0x5f, 0x64, 0x61, 0x74, 0x61, 0x5f, 0x72, 0x65,
+	0x66, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x69, 0x6e, 0x70, 0x75, 0x74, 0x44, 0x61,
+	0x74, 0x61, 0x52, 0x65, 0x66, 0x12, 0x23, 0x0a, 0x0d, 0x6f, 0x75, 0x74, 0x70, 0x75, 0x74, 0x5f,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0c, 0x6f, 0x75,
+	0x74, 0x70, 0x75, 0x74, 0x4c, 0x61, 0x79, 0x65, 0x72, 0x73, 0x12, 0x1f, 0x0a, 0x0b, 0x73, 0x6f,
+	0x75, 0x72, 0x63, 0x65, 0x5f, 0x6e, 0x6f, 0x64, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x0a, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x4e, 0x6f, 0x64, 0x65, 0x42, 0x39, 0x0a, 0x14, 0x74,
+	0x69, 0x6d, 0x65, 0x73, 0x2e, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x61, 0x69, 0x2e, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x73, 0x42, 0x09, 0x54, 0x61, 0x73, 0x6b, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01,
+	0x5a, 0x14, 0x6d, 0x69, 0x63, 0x72, 0x6f, 0x61, 0x69, 0x2e, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x2f,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -274,20 +447,24 @@ func file_task_proto_rawDescGZIP() []byte {
 	return file_task_proto_rawDescData
 }
 
-var file_task_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_task_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_task_proto_goTypes = []interface{}{
-	(*Task)(nil),         // 0: taskcenter.Task
-	(*Ack)(nil),          // 1: taskcenter.Ack
-	(*TaskResult)(nil),   // 2: taskcenter.TaskResult
-	(CompressionType)(0), // 3: taskcenter.CompressionType
+	(*Task)(nil),           // 0: taskcenter.Task
+	(*TaskAssignment)(nil), // 1: taskcenter.TaskAssignment
+	(*TaskRequest)(nil),    // 2: taskcenter.TaskRequest
+	(*PreloadTask)(nil),    // 3: taskcenter.PreloadTask
+	(*ComputeTask)(nil),    // 4: taskcenter.ComputeTask
+	(CompressionType)(0),   // 5: taskcenter.CompressionType
 }
 var file_task_proto_depIdxs = []int32{
-	3, // 0: taskcenter.Task.compression:type_name -> taskcenter.CompressionType
-	1, // [1:1] is the sub-list for method output_type
-	1, // [1:1] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	5, // 0: taskcenter.Task.compression:type_name -> taskcenter.CompressionType
+	3, // 1: taskcenter.TaskRequest.preload:type_name -> taskcenter.PreloadTask
+	4, // 2: taskcenter.TaskRequest.compute:type_name -> taskcenter.ComputeTask
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_task_proto_init() }
@@ -310,7 +487,7 @@ func file_task_proto_init() {
 			}
 		}
 		file_task_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Ack); i {
+			switch v := v.(*TaskAssignment); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -322,7 +499,31 @@ func file_task_proto_init() {
 			}
 		}
 		file_task_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*TaskResult); i {
+			switch v := v.(*TaskRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_task_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*PreloadTask); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_task_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ComputeTask); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -334,13 +535,17 @@ func file_task_proto_init() {
 			}
 		}
 	}
+	file_task_proto_msgTypes[2].OneofWrappers = []interface{}{
+		(*TaskRequest_Preload)(nil),
+		(*TaskRequest_Compute)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_task_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

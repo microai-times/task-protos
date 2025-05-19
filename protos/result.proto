@@ -7,7 +7,7 @@ option java_multiple_files = true;
 option java_package = "times.microai.protos";
 option java_outer_classname = "ResultProto";
 
-import "messages/ttf.proto";
+import "ttf.proto";
 
 
 // 通用确认响应

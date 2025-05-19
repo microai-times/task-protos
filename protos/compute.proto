@@ -7,10 +7,10 @@ option java_multiple_files = true;
 option java_package = "times.microai.protos";
 option java_outer_classname = "ComputeServiceProto";
 
-import "messages/result.proto";
-import "messages/task.proto";
-import "messages/communication.proto";
-import "messages/ttf.proto";
+import "result.proto";
+import "task.proto";
+import "communication.proto";
+import "ttf.proto";
 
 // 节点计算服务
 service ComputeNode {
