@@ -14,7 +14,4 @@ import "task.proto";
 service TaskScheduler {
   // 节点注册/心跳接口
   rpc ReportStatus (NodeStatus) returns (StatusAck);
-  
-  // 任务分配接口
-  rpc AssignTask (TaskRequest) returns (TaskAssignment);
 }
