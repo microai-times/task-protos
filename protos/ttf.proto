@@ -11,7 +11,7 @@ option java_outer_classname = "TensorTransmissionFormatProto";
 // 张量批次传输协议
 message TensorBatch {
     string transmission_id = 1;       // 唯一传输ID
-    string model_name = 2;           // 模型标识
+    string model_id = 2;           // 模型标识
     int32 source_layer = 3;          // 源层索引
     int32 target_layer = 4;          // 目标层索引
     repeated TensorData tensors = 5;  // 张量数据数组
@@ -28,11 +28,22 @@ message TensorData {
     Compression compression = 5;     // 压缩信息
     
     enum DataType {
-        DT_FLOAT = 0;
-        DT_HALF = 1;
-        DT_INT32 = 2;
-        DT_INT64 = 3;
-        DT_BOOL = 4;
+        UNDEFINED = 0;
+        FLOAT = 1;
+        INT8 = 2;
+        UINT8 = 3;
+        INT16 = 4;
+        UINT16 = 5;
+        INT32 = 6;
+        UINT32 = 7;
+        INT64 = 8;
+        UINT64 = 9;
+        FLOAT16 = 10;
+        DOUBLE = 11;
+        BOOL = 12;
+        STRING = 13;
+        COMPLEX64 = 14;
+        COMPLEX128 = 15;
     }
     
     message Compression {
@@ -69,18 +80,6 @@ message TransferAck {
         int32 bytes_received = 2;
         bool checksum_valid = 3;
     }
-}
-
-// gRPC服务定义
-service ModelTransferService {
-    // 单向批量传输
-    rpc SendBatch (TensorBatch) returns (TransferAck);
-    
-    // 流式传输 (适合大张量)
-    rpc StreamSend (stream TensorChunk) returns (TransferAck);
-    
-    // 双向流式 (带背压控制)
-    rpc BidirectionalStream (stream TensorChunk) returns (stream TransferAck);
 }
 
 // 分块传输协议

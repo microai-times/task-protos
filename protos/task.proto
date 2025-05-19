@@ -17,12 +17,3 @@ message Task {
   CompressionType compression = 4;
   uint32 original_size = 5;
 }
-
-// 计算任务参数
-message ComputeTask {
-  string task_id = 1;          // 任务唯一标识
-  string model_id = 2;         // 需要的模型标识
-  string input_data_ref = 3;   // 输入数据引用(URL/ID)
-  repeated string output_layers = 4; // 需要输出的层名称
-  string source_node = 5;      // 数据来源节点ID(可选)
-}

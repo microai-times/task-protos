@@ -8,7 +8,6 @@ option java_package = "times.microai.protos";
 option java_outer_classname = "ComputeServiceProto";
 
 import "result.proto";
-import "task.proto";
 import "communication.proto";
 import "ttf.proto";
 
@@ -17,8 +16,8 @@ service ComputeNode {
   // 模型预加载接口
   rpc PreloadModel (ModelSpec) returns (LoadResult);
   
-  // 层数据获取接口（用于节点间数据传输）
-  rpc GetLayerOutput (LayerRequest) returns (TensorData);
+  // // 层数据获取接口（用于节点间数据传输）
+  // rpc GetLayerOutput (LayerRequest) returns (TensorData);
   
   // 计算任务执行接口
   rpc ExecuteTask (ComputeTask) returns (TaskResult);

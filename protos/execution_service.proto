@@ -5,7 +5,7 @@ package taskcenter;
 option go_package = "microai.times/protos";
 option java_multiple_files = true;
 option java_package = "times.microai.protos";
-option java_outer_classname = "ExecutionProto";
+option java_outer_classname = "ExecutionServiceProto";
 
 import "result.proto";
 

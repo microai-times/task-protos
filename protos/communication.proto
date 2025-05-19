@@ -20,3 +20,10 @@ message LayerRequest {
   string request_id = 2;       // 请求标识(用于追踪)
   bool compressed = 3;         // 是否启用压缩
 }
+
+// 计算任务参数
+message ComputeTask {
+  string task_id = 1;          // 任务唯一标识
+  string model_id = 2;         // 需要的模型标识
+  TensorData input = 3;
+}

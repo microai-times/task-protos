@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package taskcenter;
+
+option go_package = "microai.times/protos";
+option java_multiple_files = true;
+option java_package = "times.microai.protos";
+option java_outer_classname = "ModelTransferServiceProto";
+
+import "ttf.proto";
+
+
+// gRPC服务定义
+service ModelTransferService {
+    // 单向批量传输
+    rpc SendBatch (TensorBatch) returns (TransferAck);
+    
+    // 流式传输 (适合大张量)
+    rpc StreamSend (stream TensorChunk) returns (TransferAck);
+    
+    // 双向流式 (带背压控制)
+    rpc BidirectionalStream (stream TensorChunk) returns (stream TransferAck);
+}
