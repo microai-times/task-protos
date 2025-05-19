@@ -20,8 +20,8 @@ message Ack {
 message TaskResult {
   string task_id = 1;
   bool success = 2;
-  int64 execution_time = 3;    // 执行耗时(ms)
-  TensorData output = 4;
+  map<string, TensorData> outputs = 3; // 各层输出
+  int64 execution_time = 4;    // 执行耗时(ms)
 }
 
 // 加载结果

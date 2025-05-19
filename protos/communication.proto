@@ -27,5 +27,5 @@ message LayerRequest {
 message ComputeTask {
   string task_id = 1;          // 任务唯一标识
   string model_id = 2;         // 需要的模型标识
-  TensorData input = 3;
+  map<string, TensorData> inputs = 3;
 }
