@@ -5,7 +5,7 @@ package taskcenter;
 option go_package = "microai.times/protos";
 option java_multiple_files = true;
 option java_package = "times.microai.protos";
-option java_outer_classname = "TaskProto";
+option java_outer_classname = "CompressionProto";
 
 
 // 压缩类型枚举
