@@ -19,10 +19,10 @@ message Task {
 }
 
 enum TaskType {
-    NONE = 0;
-    INFERENCE = 1;
-    TRAIN = 2;
-  }
+  UNKNOWN_TASK = 0;
+  INFERENCE = 1;
+  TRAIN = 2;
+}
 
 message TaskRequest {
   string task_id = 1;
