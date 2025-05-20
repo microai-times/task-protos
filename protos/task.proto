@@ -17,3 +17,18 @@ message Task {
   CompressionType compression = 4;
   uint32 original_size = 5;
 }
+
+message TaskRequest {
+  string task_id = 1;
+  bytes payload = 2;     // 任务内容（如JSON/Protobuf）
+}
+
+message TaskResponse {
+  string task_id = 1;
+  enum Status {
+    SUCCESS = 0;
+    FAILED = 1;
+  }
+  Status status = 2;
+  bytes result = 3;      // 任务执行结果
+}

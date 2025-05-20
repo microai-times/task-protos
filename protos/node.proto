@@ -7,42 +7,6 @@ option java_multiple_files = true;
 option java_package = "times.microai.protos";
 option java_outer_classname = "TaskNodeProto";
 
-// 网络信息
-message NetworkInfo {
-  enum NetworkType {
-    UNKNOWN = 0;
-    WIFI = 1;
-    MOBILE = 2;
-    ETHERNET = 3;
-  }
-  NetworkType type = 1;
-  int32 speed_mbps = 2;  // 网络速度(Mbps)
-  bool is_metered = 3;   // 是否计费网络
-}
-
-// 节点心跳信息
-message NodePulse {
-  string node_id = 1;
-  float cpu_usage = 2;    // CPU使用率(0-1)
-  float memory_usage = 3; // 内存使用率(0-1)
-  NetworkInfo network = 4;
-  float battery_level = 5; // 电量(0-1)
-}
-
-message NodeInfo {
-  string node_id = 1;  // Android设备ID
-  DeviceCapabilities capabilities = 2;
-  string android_version = 3;
-  NetworkInfo network = 4;
-}
-
-message DeviceCapabilities {
-  int32 cpu_cores = 1;
-  float memory_mb = 2;
-  bool has_gpu = 3;
-  repeated string supported_ops = 4;  // ["tflite", "onnx"]
-}
-
 // 节点状态报告
 message NodeStatus {
   string node_id = 1;          // 节点唯一标识

@@ -10,12 +10,6 @@ option java_outer_classname = "ResultProto";
 import "ttf.proto";
 
 
-// 通用确认响应
-message Ack {
-  bool success = 1;
-  string message = 2;
-}
-
 // 任务执行结果
 message TaskResult {
   string task_id = 1;
