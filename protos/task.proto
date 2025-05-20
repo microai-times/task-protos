@@ -18,9 +18,20 @@ message Task {
   uint32 original_size = 5;
 }
 
+enum TaskType {
+    NONE = 0;
+    INFERENCE = 1;
+    TRAIN = 2;
+  }
+
 message TaskRequest {
   string task_id = 1;
-  bytes payload = 2;     // 任务内容（如JSON/Protobuf）
+  TaskType type = 2;
+
+  oneof payload {
+    InferenceTask compute = 3;
+    TrainTask ping = 4;
+  };    
 }
 
 message TaskResponse {
@@ -31,4 +42,15 @@ message TaskResponse {
   }
   Status status = 2;
   bytes result = 3;      // 任务执行结果
+}
+
+// 计算任务参数
+message InferenceTask {
+  string model_id = 1;         // 需要的模型标识
+  map<string, TensorData> inputs = 2;
+}
+
+message TrainTask {
+  string model_id = 1;         // 训练模型标识
+  map<string, TensorData> inputs = 2;
 }
