@@ -9,6 +9,7 @@ option java_outer_classname = "TaskProto";
 
 import "compression.proto";
 import "ttf.proto";
+import "communication.proto";
 
 message Task {
   string task_id = 1;
@@ -31,6 +32,7 @@ message TaskRequest {
   oneof payload {
     InferenceTask compute = 3;
     TrainTask train = 4;
+    ModelSpec preload = 5;
   };    
 }
 
