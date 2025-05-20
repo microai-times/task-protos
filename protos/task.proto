@@ -36,12 +36,9 @@ message TaskRequest {
 
 message TaskResponse {
   string task_id = 1;
-  enum Status {
-    SUCCESS = 0;
-    FAILED = 1;
-  }
-  Status status = 2;
+  bool success = 2;
   bytes result = 3;      // 任务执行结果
+  string error_msg = 4;
 }
 
 // 计算任务参数
