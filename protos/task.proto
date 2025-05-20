@@ -8,7 +8,7 @@ option java_package = "times.microai.protos";
 option java_outer_classname = "TaskProto";
 
 import "compression.proto";
-
+import "ttf.proto";
 
 message Task {
   string task_id = 1;
