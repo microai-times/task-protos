@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v3.21.12
-// source: ttf.proto
+// source: model_transfer_service.proto
 
 package protos
 
@@ -191,5 +191,5 @@ var ModelTransferService_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "ttf.proto",
+	Metadata: "model_transfer_service.proto",
 }

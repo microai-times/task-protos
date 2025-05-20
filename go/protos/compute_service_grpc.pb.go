@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v3.21.12
-// source: compute.proto
+// source: compute_service.proto
 
 package protos
 
@@ -19,9 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ComputeNode_PreloadModel_FullMethodName   = "/taskcenter.ComputeNode/PreloadModel"
-	ComputeNode_GetLayerOutput_FullMethodName = "/taskcenter.ComputeNode/GetLayerOutput"
-	ComputeNode_ExecuteTask_FullMethodName    = "/taskcenter.ComputeNode/ExecuteTask"
+	ComputeNode_PreloadModel_FullMethodName = "/taskcenter.ComputeNode/PreloadModel"
+	ComputeNode_ExecuteTask_FullMethodName  = "/taskcenter.ComputeNode/ExecuteTask"
 )
 
 // ComputeNodeClient is the client API for ComputeNode service.
@@ -32,10 +31,8 @@ const (
 type ComputeNodeClient interface {
 	// 模型预加载接口
 	PreloadModel(ctx context.Context, in *ModelSpec, opts ...grpc.CallOption) (*LoadResult, error)
-	// 层数据获取接口（用于节点间数据传输）
-	GetLayerOutput(ctx context.Context, in *LayerRequest, opts ...grpc.CallOption) (*TensorData, error)
 	// 计算任务执行接口
-	ExecuteTask(ctx context.Context, in *ComputeTask, opts ...grpc.CallOption) (*TaskResult, error)
+	ExecuteTask(ctx context.Context, in *TaskRequest, opts ...grpc.CallOption) (*TaskResult, error)
 }
 
 type computeNodeClient struct {
@@ -56,17 +53,7 @@ func (c *computeNodeClient) PreloadModel(ctx context.Context, in *ModelSpec, opt
 	return out, nil
 }
 
-func (c *computeNodeClient) GetLayerOutput(ctx context.Context, in *LayerRequest, opts ...grpc.CallOption) (*TensorData, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(TensorData)
-	err := c.cc.Invoke(ctx, ComputeNode_GetLayerOutput_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *computeNodeClient) ExecuteTask(ctx context.Context, in *ComputeTask, opts ...grpc.CallOption) (*TaskResult, error) {
+func (c *computeNodeClient) ExecuteTask(ctx context.Context, in *TaskRequest, opts ...grpc.CallOption) (*TaskResult, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(TaskResult)
 	err := c.cc.Invoke(ctx, ComputeNode_ExecuteTask_FullMethodName, in, out, cOpts...)
@@ -84,10 +71,8 @@ func (c *computeNodeClient) ExecuteTask(ctx context.Context, in *ComputeTask, op
 type ComputeNodeServer interface {
 	// 模型预加载接口
 	PreloadModel(context.Context, *ModelSpec) (*LoadResult, error)
-	// 层数据获取接口（用于节点间数据传输）
-	GetLayerOutput(context.Context, *LayerRequest) (*TensorData, error)
 	// 计算任务执行接口
-	ExecuteTask(context.Context, *ComputeTask) (*TaskResult, error)
+	ExecuteTask(context.Context, *TaskRequest) (*TaskResult, error)
 	mustEmbedUnimplementedComputeNodeServer()
 }
 
@@ -101,10 +86,7 @@ type UnimplementedComputeNodeServer struct{}
 func (UnimplementedComputeNodeServer) PreloadModel(context.Context, *ModelSpec) (*LoadResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PreloadModel not implemented")
 }
-func (UnimplementedComputeNodeServer) GetLayerOutput(context.Context, *LayerRequest) (*TensorData, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetLayerOutput not implemented")
-}
-func (UnimplementedComputeNodeServer) ExecuteTask(context.Context, *ComputeTask) (*TaskResult, error) {
+func (UnimplementedComputeNodeServer) ExecuteTask(context.Context, *TaskRequest) (*TaskResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExecuteTask not implemented")
 }
 func (UnimplementedComputeNodeServer) mustEmbedUnimplementedComputeNodeServer() {}
@@ -146,26 +128,8 @@ func _ComputeNode_PreloadModel_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ComputeNode_GetLayerOutput_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LayerRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ComputeNodeServer).GetLayerOutput(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ComputeNode_GetLayerOutput_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ComputeNodeServer).GetLayerOutput(ctx, req.(*LayerRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _ComputeNode_ExecuteTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ComputeTask)
+	in := new(TaskRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -177,7 +141,7 @@ func _ComputeNode_ExecuteTask_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: ComputeNode_ExecuteTask_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ComputeNodeServer).ExecuteTask(ctx, req.(*ComputeTask))
+		return srv.(ComputeNodeServer).ExecuteTask(ctx, req.(*TaskRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -194,14 +158,10 @@ var ComputeNode_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ComputeNode_PreloadModel_Handler,
 		},
 		{
-			MethodName: "GetLayerOutput",
-			Handler:    _ComputeNode_GetLayerOutput_Handler,
-		},
-		{
 			MethodName: "ExecuteTask",
 			Handler:    _ComputeNode_ExecuteTask_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "compute.proto",
+	Metadata: "compute_service.proto",
 }

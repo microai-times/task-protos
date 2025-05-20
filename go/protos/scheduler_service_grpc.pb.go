@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v3.21.12
-// source: scheduler.proto
+// source: scheduler_service.proto
 
 package protos
 
@@ -20,7 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	TaskScheduler_ReportStatus_FullMethodName = "/taskcenter.TaskScheduler/ReportStatus"
-	TaskScheduler_AssignTask_FullMethodName   = "/taskcenter.TaskScheduler/AssignTask"
+	TaskScheduler_TaskStream_FullMethodName   = "/taskcenter.TaskScheduler/TaskStream"
 )
 
 // TaskSchedulerClient is the client API for TaskScheduler service.
@@ -31,8 +31,8 @@ const (
 type TaskSchedulerClient interface {
 	// 节点注册/心跳接口
 	ReportStatus(ctx context.Context, in *NodeStatus, opts ...grpc.CallOption) (*StatusAck, error)
-	// 任务分配接口
-	AssignTask(ctx context.Context, in *TaskRequest, opts ...grpc.CallOption) (*TaskAssignment, error)
+	// 服务器主动下发任务（双向流）
+	TaskStream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[TaskResult, TaskRequest], error)
 }
 
 type taskSchedulerClient struct {
@@ -53,15 +53,18 @@ func (c *taskSchedulerClient) ReportStatus(ctx context.Context, in *NodeStatus, 
 	return out, nil
 }
 
-func (c *taskSchedulerClient) AssignTask(ctx context.Context, in *TaskRequest, opts ...grpc.CallOption) (*TaskAssignment, error) {
+func (c *taskSchedulerClient) TaskStream(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[TaskResult, TaskRequest], error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(TaskAssignment)
-	err := c.cc.Invoke(ctx, TaskScheduler_AssignTask_FullMethodName, in, out, cOpts...)
+	stream, err := c.cc.NewStream(ctx, &TaskScheduler_ServiceDesc.Streams[0], TaskScheduler_TaskStream_FullMethodName, cOpts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
+	x := &grpc.GenericClientStream[TaskResult, TaskRequest]{ClientStream: stream}
+	return x, nil
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type TaskScheduler_TaskStreamClient = grpc.BidiStreamingClient[TaskResult, TaskRequest]
 
 // TaskSchedulerServer is the server API for TaskScheduler service.
 // All implementations must embed UnimplementedTaskSchedulerServer
@@ -71,8 +74,8 @@ func (c *taskSchedulerClient) AssignTask(ctx context.Context, in *TaskRequest, o
 type TaskSchedulerServer interface {
 	// 节点注册/心跳接口
 	ReportStatus(context.Context, *NodeStatus) (*StatusAck, error)
-	// 任务分配接口
-	AssignTask(context.Context, *TaskRequest) (*TaskAssignment, error)
+	// 服务器主动下发任务（双向流）
+	TaskStream(grpc.BidiStreamingServer[TaskResult, TaskRequest]) error
 	mustEmbedUnimplementedTaskSchedulerServer()
 }
 
@@ -86,8 +89,8 @@ type UnimplementedTaskSchedulerServer struct{}
 func (UnimplementedTaskSchedulerServer) ReportStatus(context.Context, *NodeStatus) (*StatusAck, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReportStatus not implemented")
 }
-func (UnimplementedTaskSchedulerServer) AssignTask(context.Context, *TaskRequest) (*TaskAssignment, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AssignTask not implemented")
+func (UnimplementedTaskSchedulerServer) TaskStream(grpc.BidiStreamingServer[TaskResult, TaskRequest]) error {
+	return status.Errorf(codes.Unimplemented, "method TaskStream not implemented")
 }
 func (UnimplementedTaskSchedulerServer) mustEmbedUnimplementedTaskSchedulerServer() {}
 func (UnimplementedTaskSchedulerServer) testEmbeddedByValue()                       {}
@@ -128,23 +131,12 @@ func _TaskScheduler_ReportStatus_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TaskScheduler_AssignTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(TaskRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(TaskSchedulerServer).AssignTask(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: TaskScheduler_AssignTask_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TaskSchedulerServer).AssignTask(ctx, req.(*TaskRequest))
-	}
-	return interceptor(ctx, in, info, handler)
+func _TaskScheduler_TaskStream_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(TaskSchedulerServer).TaskStream(&grpc.GenericServerStream[TaskResult, TaskRequest]{ServerStream: stream})
 }
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type TaskScheduler_TaskStreamServer = grpc.BidiStreamingServer[TaskResult, TaskRequest]
 
 // TaskScheduler_ServiceDesc is the grpc.ServiceDesc for TaskScheduler service.
 // It's only intended for direct use with grpc.RegisterService,
@@ -157,11 +149,14 @@ var TaskScheduler_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "ReportStatus",
 			Handler:    _TaskScheduler_ReportStatus_Handler,
 		},
+	},
+	Streams: []grpc.StreamDesc{
 		{
-			MethodName: "AssignTask",
-			Handler:    _TaskScheduler_AssignTask_Handler,
+			StreamName:    "TaskStream",
+			Handler:       _TaskScheduler_TaskStream_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "scheduler.proto",
+	Metadata: "scheduler_service.proto",
 }

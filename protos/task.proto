@@ -23,6 +23,7 @@ enum TaskType {
   UNKNOWN_TASK = 0;
   INFERENCE = 1;
   TRAIN = 2;
+  PRELOAD = 3;
 }
 
 message TaskRequest {
