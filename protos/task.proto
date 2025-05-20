@@ -30,7 +30,7 @@ message TaskRequest {
 
   oneof payload {
     InferenceTask compute = 3;
-    TrainTask ping = 4;
+    TrainTask train = 4;
   };    
 }
 
