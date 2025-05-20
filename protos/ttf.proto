@@ -27,6 +27,7 @@ message TensorData {
     bytes data = 4;                  // 原始字节数据
     Compression compression = 5;     // 压缩信息
     
+    //兼容 enum OnnxJavaType
     enum DataType {
         UNKNOWN = 0;
         FLOAT = 1;
