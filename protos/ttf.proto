@@ -28,8 +28,7 @@ message TensorData {
     Compression compression = 5;     // 压缩信息
     
     enum DataType {
-        UNDEFINED = 0;
-        FLOAT = 1;
+        BOOL = 1;
         INT8 = 2;
         UINT8 = 3;
         INT16 = 4;
@@ -38,12 +37,9 @@ message TensorData {
         UINT32 = 7;
         INT64 = 8;
         UINT64 = 9;
-        FLOAT16 = 10;
+        FLOAT = 10;
         DOUBLE = 11;
-        BOOL = 12;
-        STRING = 13;
-        COMPLEX64 = 14;
-        COMPLEX128 = 15;
+        STRING = 12;
     }
     
     message Compression {
