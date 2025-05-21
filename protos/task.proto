@@ -7,17 +7,8 @@ option java_multiple_files = true;
 option java_package = "times.microai.protos";
 option java_outer_classname = "TaskProto";
 
-import "compression.proto";
 import "ttf.proto";
 import "communication.proto";
-
-message Task {
-  string task_id = 1;
-  bytes payload = 2;  // 可包含Protobuf序列化的模型参数
-  int32 timeout_sec = 3;
-  CompressionType compression = 4;
-  uint32 original_size = 5;
-}
 
 enum TaskType {
   UNKNOWN_TASK = 0;
