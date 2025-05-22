@@ -19,8 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	ComputeNode_PreloadModel_FullMethodName = "/taskcenter.ComputeNode/PreloadModel"
-	ComputeNode_ExecuteTask_FullMethodName  = "/taskcenter.ComputeNode/ExecuteTask"
+	ComputeNode_ExecuteTask_FullMethodName = "/taskcenter.ComputeNode/ExecuteTask"
 )
 
 // ComputeNodeClient is the client API for ComputeNode service.
@@ -29,8 +28,6 @@ const (
 //
 // 节点计算服务
 type ComputeNodeClient interface {
-	// 模型预加载接口
-	PreloadModel(ctx context.Context, in *ModelSpec, opts ...grpc.CallOption) (*LoadResult, error)
 	// 计算任务执行接口
 	ExecuteTask(ctx context.Context, in *TaskRequest, opts ...grpc.CallOption) (*TaskResult, error)
 }
@@ -41,16 +38,6 @@ type computeNodeClient struct {
 
 func NewComputeNodeClient(cc grpc.ClientConnInterface) ComputeNodeClient {
 	return &computeNodeClient{cc}
-}
-
-func (c *computeNodeClient) PreloadModel(ctx context.Context, in *ModelSpec, opts ...grpc.CallOption) (*LoadResult, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(LoadResult)
-	err := c.cc.Invoke(ctx, ComputeNode_PreloadModel_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *computeNodeClient) ExecuteTask(ctx context.Context, in *TaskRequest, opts ...grpc.CallOption) (*TaskResult, error) {
@@ -69,8 +56,6 @@ func (c *computeNodeClient) ExecuteTask(ctx context.Context, in *TaskRequest, op
 //
 // 节点计算服务
 type ComputeNodeServer interface {
-	// 模型预加载接口
-	PreloadModel(context.Context, *ModelSpec) (*LoadResult, error)
 	// 计算任务执行接口
 	ExecuteTask(context.Context, *TaskRequest) (*TaskResult, error)
 	mustEmbedUnimplementedComputeNodeServer()
@@ -83,9 +68,6 @@ type ComputeNodeServer interface {
 // pointer dereference when methods are called.
 type UnimplementedComputeNodeServer struct{}
 
-func (UnimplementedComputeNodeServer) PreloadModel(context.Context, *ModelSpec) (*LoadResult, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PreloadModel not implemented")
-}
 func (UnimplementedComputeNodeServer) ExecuteTask(context.Context, *TaskRequest) (*TaskResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ExecuteTask not implemented")
 }
@@ -108,24 +90,6 @@ func RegisterComputeNodeServer(s grpc.ServiceRegistrar, srv ComputeNodeServer) {
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&ComputeNode_ServiceDesc, srv)
-}
-
-func _ComputeNode_PreloadModel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ModelSpec)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ComputeNodeServer).PreloadModel(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: ComputeNode_PreloadModel_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ComputeNodeServer).PreloadModel(ctx, req.(*ModelSpec))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _ComputeNode_ExecuteTask_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -153,10 +117,6 @@ var ComputeNode_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "taskcenter.ComputeNode",
 	HandlerType: (*ComputeNodeServer)(nil),
 	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "PreloadModel",
-			Handler:    _ComputeNode_PreloadModel_Handler,
-		},
 		{
 			MethodName: "ExecuteTask",
 			Handler:    _ComputeNode_ExecuteTask_Handler,

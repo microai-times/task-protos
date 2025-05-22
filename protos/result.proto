@@ -20,11 +20,11 @@ message TaskResult {
 }
 
 // 加载结果
-message LoadResult {
-  bool success = 1;
-  int64 memory_usage = 2;      // 内存占用(bytes)
-  string error_msg = 3;        // 失败时的错误信息
-}
+// message LoadResult {
+//   bool success = 1;
+//   int64 memory_usage = 2;      // 内存占用(bytes)
+//   string error_msg = 3;        // 失败时的错误信息
+// }
 
 // 注册响应
 message RegistrationResponse {

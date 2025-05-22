@@ -15,7 +15,7 @@ import "task.proto";
 // 节点计算服务
 service ComputeNode {
   // 模型预加载接口
-  rpc PreloadModel (ModelSpec) returns (LoadResult);
+  // rpc PreloadModel (ModelSpec) returns (LoadResult);
   
   // // 层数据获取接口（用于节点间数据传输）
   // rpc GetLayerOutput (LayerRequest) returns (TensorData);
